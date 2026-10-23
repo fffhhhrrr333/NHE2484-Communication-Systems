@@ -6,3 +6,15 @@ venv/
 output/
 *.out
 *.log
+optimization.csv
+optimization_result.json
+refinement.csv
+refinement_result.json
+advanced_search.csv
+best_candidate.nec
+advanced_candidate.nec
+E3_previous.nec
+E3_before_advanced.nec
+results_before_advanced.json
+delivery_audit.json
+results/Experiment3/*.csv

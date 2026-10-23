@@ -1,75 +1,106 @@
-# Complete-model 4NEC2 antenna optimization
+# 📡 14-Wire Yagi–Corner Antenna Optimization
 
-This folder contains reproducible optimization code for Objective 3 of the NHE2484 antenna assignment. Every candidate sent to the electromagnetic solver is a **complete 14-wire NEC2 model**. The search does not use an electromagnetic surrogate, a reduced wire model, or a simplified parameter model.
+> A reproducible 300 MHz antenna search using Python and the NEC2 engine bundled with [4NEC2](https://www.qsl.net/4nec2/).
 
-The `models/` directory contains the delivered `E1.nec`, `E2.nec`, and final `E3.nec` files. `results/Experiment3/` contains the final 300 MHz summary, frequency sweep, director parameters, and two complete-model parameter sweeps. These files are snapshots of the delivered result; rerunning `publish_full.py` generates fresh copies in its selected output directory.
+One driven dipole, nine rods in a 120° corner reflector, and four independently sized and spaced directors form the **complete 14-wire model**. Every search candidate is evaluated by NEC2 with all 14 wires and 31 segments per wire. The optimization uses no reduced electromagnetic or parameter model.
 
-## Physical model and performance measure
+## Key result
 
-| Item | Model setting |
-|---|---|
-| Driven element | Centre-fed cylindrical dipole, length 0.4626 m, on the Z axis at X = Y = 0 |
-| Reflector | Nine parallel cylindrical rods forming a 120° corner behind the driven element; adjacent rods are 0.15 m apart along each wing |
-| Directors | Four parallel cylindrical rods ahead of the driven element, each with its own length and adjacent gap |
-| All rods | Diameter 8 mm (NEC radius 0.004 m); 31 segments per rod |
-| Excitation and environment | 1 V source on segment 16 of the driven element; free space; 300 MHz design point |
-| Direction and reference | Forward +X, backward −X; 50 Ω reference impedance |
+| Metric | Initial four-director design | Optimized design |
+|:--|--:|--:|
+| Realized forward gain at 300 MHz | 12.5331 dBi | **13.0500 dBi** |
+| SWR at 300 MHz, 50 Ω | 1.1706 | **1.000013** |
+| Forward-to-back ratio at 300 MHz | 8.31 dB | **10.22 dB** |
+| 2:1 SWR bandwidth containing 300 MHz | 5.5873 MHz | **4.5298 MHz** |
 
-Ten physical dimensions are varied: corner apex distance, common reflector rod length, four director lengths, and four consecutive director gaps. The driven length, rod diameter, nine-rod spacing, corner angle, and segment count stay fixed. The optimization begins from the four-director antenna developed from the assignment's initial 0.42 m director length and 0.25 m spacing.
+The realized-gain improvement is **0.5169 dB**. The higher-gain design has a narrower 2:1 SWR band: **297.1535–301.6833 MHz**. These are free-space NEC2 simulation results, not measurements. The final deck is [`models/E3.nec`](models/E3.nec), and the independently checked numbers are in [`results/Experiment3/results.json`](results/Experiment3/results.json).
 
-The target is maximum **realized forward gain at 300 MHz** in dBi, subject to SWR ≤ 2 and forward-to-back ratio ≥ 8 dB. NEC2 reports gain referenced to accepted power. The scripts compute realized gain as `gain_dbi + 10 log10(1 − |Γ|²)`, with `Γ = (Zin − 50)/(Zin + 50)`. The two extra limits are practical quality gates used in this search; they are not stated as numerical limits in the assignment brief. An optimization run is a bounded numerical search, not a proof of a global maximum.
+## Model and solver flow
 
-## Requirements
+```mermaid
+flowchart LR
+    A[10 physical dimensions] --> B[Full 14-wire NEC deck]
+    B --> C[4NEC2 NEC2 engine]
+    C --> D[Input impedance and ±X gain]
+    D --> E[Realized gain, SWR, F/B]
+    E -->|Search feedback| A
+```
 
-- Windows with 4NEC2 installed; the current engine path is `C:\4nec2\exe\nec2dxs1K5.exe`. Change `ENGINE` in `optimize_full.py` if 4NEC2 is elsewhere.
-- Python 3.12 or later with NumPy and SciPy. Verified here with Python 3.12.5, NumPy 2.1.2, and SciPy 1.17.0. Install dependencies with `python -m pip install -r requirements.txt`.
-- Each NEC2 engine process receives a unique temporary input/output pair. Four processes may run concurrently in the global searches.
+| Geometry | Fixed or optimized setting |
+|:--|:--|
+| Driven dipole | 0.4626 m length, centre-fed at the origin |
+| Corner reflector | Nine 8 mm diameter rods, 0.15 m spacing along each wing, 120° included angle |
+| Directors | Four 8 mm diameter rods in front of the driven dipole |
+| Discretization | 31 NEC segments per rod; free space |
+| Design point | 300 MHz; forward +X, backward −X; 50 Ω reference |
 
-## Reproduce the search
+The search varies the corner apex distance, common reflector length, four director lengths, and four consecutive director gaps. It keeps the driven length, wire diameter, reflector spacing, and corner angle fixed. The final apex distance is **0.1028049 m**, and reflector length is **0.5103174 m**.
 
-From this directory in PowerShell:
+| Director | Length (m) | Gap from previous element (m) | X position (m) |
+|--:|--:|--:|--:|
+| 1 | 0.4379216 | 0.1826665 | 0.1826665 |
+| 2 | 0.4255981 | 0.2798626 | 0.4625291 |
+| 3 | 0.4206466 | 0.3537916 | 0.8163207 |
+| 4 | 0.4263909 | 0.3556554 | 1.1719761 |
+
+The optimization maximizes realized gain at 300 MHz while requiring **SWR ≤ 2** and **F/B ≥ 8 dB**. Those two limits are search quality gates. They are not numerical limits specified in the assignment brief. Realized gain includes mismatch loss:
+
+```text
+Gamma = (Zin - 50) / (Zin + 50)
+G_realized [dBi] = G_NEC [dBi] + 10 log10(1 - |Gamma|^2)
+```
+
+## Repository layout
+
+```text
+.
+├── README.md                 Project overview and reproduction steps
+├── LICENSE                   MIT License
+├── requirements.txt          Python dependencies
+├── .gitignore
+├── optimize_full.py          Initial differential-evolution search
+├── refine_full.py            Bounded restart and local refinement
+├── advanced_full.py          Sobol/archive-seeded expanded search
+├── publish_full.py           Independent deck audit and result export
+├── advanced_result.json      Best search parameters and 300 MHz result
+├── models/
+│   ├── E1.nec
+│   ├── E2.nec
+│   └── E3.nec              Final 14-wire antenna
+└── results/Experiment3/
+    └── results.json          Delivered result summary
+```
+
+Intermediate traces, candidate decks, and detailed sweep CSV files are generated locally by the scripts and are not required in the public repository.
+
+## Quick start
+
+**Requirements:** Windows, Python 3.12+, and 4NEC2. The verified setup used Python 3.12.5, NumPy 2.1.2, SciPy 1.17.0, and `C:\4nec2\exe\nec2dxs1K5.exe`. If your 4NEC2 engine is installed elsewhere, change `ENGINE` in `optimize_full.py`.
+
+From the repository root in PowerShell, install dependencies and regenerate the delivered model from the committed parameters:
 
 ```powershell
 python -m pip install -r requirements.txt
+python publish_full.py --source advanced_result.json --output-root .\output
+```
+
+The command checks the delivered deck with a separate NEC2 run using 361-point elevation and azimuth patterns. It writes `output/E3.nec`, `output/Experiment3/results.json`, a frequency sweep, director table, and two 41-point director sweeps. Each sweep point uses the complete 14-wire model. `output/` is ignored by Git.
+
+To repeat the full search from the initial design:
+
+```powershell
 python optimize_full.py
 python refine_full.py
 python advanced_full.py
+python publish_full.py --source advanced_result.json --output-root .\output
 ```
 
-`optimize_full.py` performs a seeded broad differential-evolution search. `refine_full.py` restarts differential evolution around its best feasible point and then performs bounded Nelder–Mead refinement. `advanced_full.py` broadens the physical bounds, seeds the population with Sobol samples and diverse archived candidates, and finishes with another local refinement. All three stages call the full NEC2 solver for each candidate; the population search does not use an interpolated objective.
+The stages use fixed random seeds. Their generated traces feed the next stage; a clean checkout contains everything needed to start. Parallel scheduling and NEC2 or library versions can change small numerical details. The search reports its best evaluated candidate and does not establish a global optimum.
 
-Each stage writes a CSV evaluation trace and a JSON result file:
+## Numerical sensitivity
 
-| Stage | Trace | Result |
-|---|---|---|
-| Broad search | `optimization.csv` | `optimization_result.json` |
-| Local restart | `refinement.csv` | `refinement_result.json` |
-| Expanded search | `advanced_search.csv` | `advanced_result.json` |
-
-The random seeds are fixed in the scripts. Different CPU scheduling can change the order of trace rows, and minor numerical or software-version differences can change the last digits.
-
-To publish a candidate, select its result JSON explicitly:
-
-```powershell
-python publish_full.py --source refinement_result.json
-# Or, if advanced_result.json improves the verified incumbent:
-python publish_full.py --source advanced_result.json
-```
-
-The publisher first verifies the **actual delivered deck** independently with NEC2 and 361-point elevation and azimuth requests. It checks that the result improves the original 12.5331 dBi four-director baseline while meeting SWR ≤ 2 and F/B ≥ 8 dB. It then writes `E3.nec`, `Experiment3/results.json`, `frequency_sweep.csv`, `Director_Parameters.csv`, and 41-point `director_length_sweep.csv` and `director_spacing_sweep.csv`. Each sweep point again evaluates all 14 rods. The scan CSV fields are `offset_m, realized_gain_dbi, swr, fb_db`; the common offset is applied to all four director lengths or all four gaps while preserving their individual differences.
-
-When this directory is `E:\nec\code`, the default publication destination is the adjacent `E:\nec` directory. In an independent checkout, the default is `output/` inside the checkout. Use `--output-root PATH` to select another destination. The publisher does not create or upload a GitHub repository.
-
-## Verified result and numerical limits
-
-The current delivered `E3.nec` has been evaluated separately from the two-direction optimization deck. At 300 MHz it gives **13.0500 dBi realized gain**, **1.000013 SWR**, and **10.22 dB F/B**. The 2:1 SWR band containing 300 MHz is **297.15352–301.68335 MHz**, or **4.52982 MHz**. The original E3 result before this search was 12.5331 dBi, 1.17065 SWR, and 8.31 dB F/B. The intermediate 12.9700 dBi design had a 5.91149 MHz 2:1 bandwidth; the extra 0.08 dB of realized gain in the final design comes with a narrower band.
-
-The final corner apex distance is 0.1028049 m and the common reflector length is 0.5103174 m. Director lengths are `[0.4379216, 0.4255981, 0.4206466, 0.4263909]` m; successive gaps are `[0.1826665, 0.2798626, 0.3537916, 0.3556554]` m. `advanced_result.json` records the search result, while `delivery_audit.json` records the independently parsed delivered deck.
-
-The optimizer found an input impedance near `50 + j0 Ω`, so its calculated S11 at exactly 300 MHz is about −104 dB. This is an ideal-model numerical point, sensitive to coordinate rounding, manufacturing tolerances, material properties, and the frequency grid. It should not be interpreted as an achievable measured S11. The finite 2:1 SWR bandwidth and the complete frequency sweep are more useful measures of matching robustness.
-
-The model assumes perfect conductors and free space. Feed hardware, support structure, nearby objects, and fabrication tolerances are outside this simulation. The forward-to-back number compares the exact +X and −X directions, not an angular average over a rear hemisphere.
+At exactly 300 MHz the optimized ideal model has `Zin ≈ 49.9994 + j0.00021 Ω`, giving **S11 ≈ −104 dB** in the NEC2 output. This unusually deep point is sensitive to dimension rounding and small changes in frequency, fabrication, conductors, and the surrounding environment. The finite **4.5298 MHz** 2:1 SWR bandwidth is a more useful matching summary. The simulation omits a real feed, supports, material losses, and nearby objects. F/B compares the exact +X and −X directions.
 
 ## License
 
-The code and accompanying model/data files in this repository are released under the MIT License; see `LICENSE`.
+MIT License © 2026 Haoran Feng. See [LICENSE](LICENSE).
