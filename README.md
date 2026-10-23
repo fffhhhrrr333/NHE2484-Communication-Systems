@@ -1,10 +1,10 @@
-# 📡 14-Wire Yagi–Corner Antenna Optimization
+# ⚡ 14-Wire Yagi–Corner Antenna Optimization
 
 > A reproducible 300 MHz antenna search using Python and the NEC2 engine bundled with [4NEC2](https://www.qsl.net/4nec2/).
 
 One driven dipole, nine rods in a 120° corner reflector, and four independently sized and spaced directors form the **complete 14-wire model**. Every search candidate is evaluated by NEC2 with all 14 wires and 31 segments per wire. The optimization uses no reduced electromagnetic or parameter model.
 
-## 🎯 Key result
+## 🏆 Key result
 
 | Metric | Initial four-director design | Optimized design |
 |:--|--:|--:|
@@ -15,7 +15,7 @@ One driven dipole, nine rods in a 120° corner reflector, and four independently
 
 The realized-gain improvement is **0.5169 dB**. The higher-gain design has a narrower 2:1 SWR band: **297.1535–301.6833 MHz**. These are free-space NEC2 simulation results, not measurements. The final deck is [`models/E3.nec`](models/E3.nec), and the independently checked numbers are in [`results/Experiment3/results.json`](results/Experiment3/results.json).
 
-## 🧩 Model and solver flow
+## 🧬 Model and solver flow
 
 ```mermaid
 flowchart LR
@@ -73,7 +73,7 @@ G_realized [dBi] = G_NEC [dBi] + 10 log10(1 - |Gamma|^2)
 
 Intermediate traces, candidate decks, and detailed sweep CSV files are generated locally by the scripts and are not required in the public repository.
 
-## 🚀 Quick start
+## ⚙️ Quick start
 
 **Requirements:** Windows, Python 3.12+, and 4NEC2. The verified setup used Python 3.12.5, NumPy 2.1.2, SciPy 1.17.0, and `C:\4nec2\exe\nec2dxs1K5.exe`. If your 4NEC2 engine is installed elsewhere, change `ENGINE` in `optimize_full.py`.
 
@@ -97,7 +97,7 @@ python publish_full.py --source advanced_result.json --output-root .\output
 
 The stages use fixed random seeds. Their generated traces feed the next stage; a clean checkout contains everything needed to start. Parallel scheduling and NEC2 or library versions can change small numerical details. The search reports its best evaluated candidate and does not establish a global optimum.
 
-## 🔎 Numerical sensitivity
+## 🔬 Numerical sensitivity
 
 At exactly 300 MHz the optimized ideal model has `Zin ≈ 49.9994 + j0.00021 Ω`, giving **S11 ≈ −104 dB** in the NEC2 output. This unusually deep point is sensitive to dimension rounding and small changes in frequency, fabrication, conductors, and the surrounding environment. The finite **4.5298 MHz** 2:1 SWR bandwidth is a more useful matching summary. The simulation omits a real feed, supports, material losses, and nearby objects. F/B compares the exact +X and −X directions.
 
