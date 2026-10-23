@@ -2,18 +2,22 @@
 
 > A reproducible 300 MHz antenna search using Python and the NEC2 engine bundled with [4NEC2](https://www.qsl.net/4nec2/).
 
+**📡 300 MHz** · **🧬 14 wires** · **🐍 Python + SciPy** · **⚙️ NEC2** · **📄 MIT License**
+
 One driven dipole, nine rods in a 120° corner reflector, and four independently sized and spaced directors form the **complete 14-wire model**. Every search candidate is evaluated by NEC2 with all 14 wires and 31 segments per wire. The optimization uses no reduced electromagnetic or parameter model.
 
 ## 🏆 Key result
 
 | Metric | Initial four-director design | Optimized design |
 |:--|--:|--:|
-| Realized forward gain at 300 MHz | 12.5331 dBi | **13.0500 dBi** |
-| SWR at 300 MHz, 50 Ω | 1.1706 | **1.000013** |
-| Forward-to-back ratio at 300 MHz | 8.31 dB | **10.22 dB** |
-| 2:1 SWR bandwidth containing 300 MHz | 5.5873 MHz | **4.5298 MHz** |
+| 📈 Realized forward gain at 300 MHz | 12.5331 dBi | **13.0500 dBi** |
+| 🔌 SWR at 300 MHz, 50 Ω | 1.1706 | **1.000013** |
+| 🎯 Forward-to-back ratio at 300 MHz | 8.31 dB | **10.22 dB** |
+| 📶 2:1 SWR bandwidth containing 300 MHz | 5.5873 MHz | **4.5298 MHz** |
 
 The realized-gain improvement is **0.5169 dB**. The higher-gain design has a narrower 2:1 SWR band: **297.1535–301.6833 MHz**. These are free-space NEC2 simulation results, not measurements. The final deck is [`models/E3.nec`](models/E3.nec), and the independently checked numbers are in [`results/Experiment3/results.json`](results/Experiment3/results.json).
+
+> 💡 **Design tradeoff:** the optimized antenna increases forward gain and F/B, while reducing the frequency range with SWR ≤ 2.
 
 ## 🧬 Model and solver flow
 
@@ -28,13 +32,15 @@ flowchart LR
 
 | Geometry | Fixed or optimized setting |
 |:--|:--|
-| Driven dipole | 0.4626 m length, centre-fed at the origin |
-| Corner reflector | Nine 8 mm diameter rods, 0.15 m spacing along each wing, 120° included angle |
-| Directors | Four 8 mm diameter rods in front of the driven dipole |
-| Discretization | 31 NEC segments per rod; free space |
-| Design point | 300 MHz; forward +X, backward −X; 50 Ω reference |
+| 🔌 Driven dipole | 0.4626 m length, centre-fed at the origin |
+| 🛡️ Corner reflector | Nine 8 mm diameter rods, 0.15 m spacing along each wing, 120° included angle |
+| ➡️ Directors | Four 8 mm diameter rods in front of the driven dipole |
+| 🧮 Discretization | 31 NEC segments per rod; free space |
+| 📡 Design point | 300 MHz; forward +X, backward −X; 50 Ω reference |
 
 The search varies the corner apex distance, common reflector length, four director lengths, and four consecutive director gaps. It keeps the driven length, wire diameter, reflector spacing, and corner angle fixed. The final apex distance is **0.1028049 m**, and reflector length is **0.5103174 m**.
+
+### 📐 Final director dimensions
 
 | Director | Length (m) | Gap from previous element (m) | X position (m) |
 |--:|--:|--:|--:|
@@ -43,12 +49,25 @@ The search varies the corner apex distance, common reflector length, four direct
 | 3 | 0.4206466 | 0.3537916 | 0.8163207 |
 | 4 | 0.4263909 | 0.3556554 | 1.1719761 |
 
+### 🎯 Objective and constraints
+
 The optimization maximizes realized gain at 300 MHz while requiring **SWR ≤ 2** and **F/B ≥ 8 dB**. Those two limits are search quality gates. They are not numerical limits specified in the assignment brief. Realized gain includes mismatch loss:
 
 ```text
 Gamma = (Zin - 50) / (Zin + 50)
 G_realized [dBi] = G_NEC [dBi] + 10 log10(1 - |Gamma|^2)
 ```
+
+## ⚡ Optimization workflow
+
+| Stage | Method | Purpose | Script |
+|:--|:--|:--|:--|
+| 🌍 Explore | Differential evolution | Search the initial physical bounds | [`optimize_full.py`](optimize_full.py) |
+| 🎯 Refine | Bounded restart + local refinement | Improve the best feasible candidate | [`refine_full.py`](refine_full.py) |
+| 🧬 Expand | Sobol/archive-seeded differential evolution + Nelder–Mead | Explore expanded bounds and refine the result | [`advanced_full.py`](advanced_full.py) |
+| ✅ Verify | Independent NEC2 evaluation | Check the delivered model and export results | [`publish_full.py`](publish_full.py) |
+
+Every optimization evaluation solves the complete antenna. The final verification also evaluates 361-point elevation and azimuth patterns.
 
 ## 📂 Repository layout
 
@@ -75,18 +94,29 @@ Intermediate traces, candidate decks, and detailed sweep CSV files are generated
 
 ## ⚙️ Quick start
 
+### 🛠️ 1. Prepare the environment
+
 **Requirements:** Windows, Python 3.12+, and 4NEC2. The verified setup used Python 3.12.5, NumPy 2.1.2, SciPy 1.17.0, and `C:\4nec2\exe\nec2dxs1K5.exe`. If your 4NEC2 engine is installed elsewhere, change `ENGINE` in `optimize_full.py`.
 
-From the repository root in PowerShell, install dependencies and regenerate the delivered model from the committed parameters:
+From the repository root in PowerShell:
 
 ```powershell
 python -m pip install -r requirements.txt
+```
+
+### ✅ 2. Reproduce the final result
+
+Use the committed best parameters to regenerate and verify the delivered model:
+
+```powershell
 python publish_full.py --source advanced_result.json --output-root .\output
 ```
 
-The command checks the delivered deck with a separate NEC2 run using 361-point elevation and azimuth patterns. It writes `output/E3.nec`, `output/Experiment3/results.json`, a frequency sweep, director table, and two 41-point director sweeps. Each sweep point uses the complete 14-wire model. `output/` is ignored by Git.
+📦 **Generated outputs:** `output/E3.nec`, `output/Experiment3/results.json`, a frequency sweep, director table, and two 41-point director sweeps. Each sweep point uses the complete 14-wire model. `output/` is ignored by Git.
 
-To repeat the full search from the initial design:
+### 🚀 3. Run a fresh optimization
+
+To repeat all search stages from the initial design:
 
 ```powershell
 python optimize_full.py
