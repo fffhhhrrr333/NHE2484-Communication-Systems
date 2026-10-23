@@ -1,0 +1,74 @@
+{
+  "swr_min": 1.0000068403302307,
+  "swr_min_mhz": 300.0,
+  "band_contains_300_mhz": true,
+  "bw_low_mhz": 296.0294507402442,
+  "bw_high_mhz": 301.9409424891874,
+  "bw_mhz": 5.911491748943206,
+  "fractional_bw_percent": 1.9771854312108261,
+  "gain_peak_dbi": 12.969999999949199,
+  "gain_peak_mhz": 300.0,
+  "at_300": {
+    "z": [
+      49.9997,
+      0.000164237
+    ],
+    "swr": 1.0000068403302307,
+    "s11": -109.31908824711553,
+    "gain": 12.97,
+    "realized_gain": 12.969999999949199,
+    "fb": 10.23
+  },
+  "bw_method": "2:1 SWR; crossing frequencies refined with NEC2 solver",
+  "distance_m": 0.1472870709393808,
+  "reflector_length_m": 0.4884920808468449,
+  "director_lengths_m": [
+    0.4399232049785177,
+    0.42562639885317566,
+    0.4206571650125579,
+    0.4218939648827609
+  ],
+  "director_gaps_m": [
+    0.18067735340059843,
+    0.27917546123951964,
+    0.34123767111665204,
+    0.3676574562371055
+  ],
+  "director_positions_m": [
+    0.18067735340059843,
+    0.45985281464011807,
+    0.8010904857567701,
+    1.1687479419938755
+  ],
+  "hpbw_elevation_deg": 40.42424242424241,
+  "initial_one_director_300": {
+    "f": 300.0,
+    "z": [
+      18.5673,
+      16.8251
+    ],
+    "swr": 3.04026064834711,
+    "s11": -5.934474607660546,
+    "gain": 9.14,
+    "realized_gain": 7.861520424742148,
+    "fb": 7.010000000000001
+  },
+  "initial_four_directors_300": {
+    "f": 300.0,
+    "z": [
+      20.9824,
+      8.65762
+    ],
+    "swr": 2.469024222218926,
+    "s11": -7.46356751013283,
+    "gain": 11.31,
+    "realized_gain": 10.451706773346558,
+    "fb": 14.84
+  },
+  "figure_source": "Current figures: 4NEC2 GUI screenshots for CAD, SWR, S11, patterns and F/B; NEC2 solver data replots for realized-gain and parameter sweeps. See E:/nec/Figure_sources.csv.",
+  "optimization": {
+    "method": "bounded DE restart plus Nelder-Mead",
+    "evaluations": 1585,
+    "full_model": "14 wires; 9 reflector rods; 4 directors; 31 segments per wire"
+  }
+}

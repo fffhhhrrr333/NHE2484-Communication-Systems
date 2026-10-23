@@ -1,0 +1,15 @@
+CM NHE2484 objective 1: centre-fed dipole with one parasitic reflector
+CM Free-space model, 300 MHz design frequency, 50-ohm reference
+CM Driven element: length 0.4626 m, diameter 0.008 m (radius 0.004 m)
+CM Reflector: length 0.4800 m, diameter 0.008 m, x = -0.2000 m
+CM The isolated driven element was tuned for X_in approximately zero at 300 MHz.
+CM Boom/forward direction is +X; both elements are parallel to Z.
+CE
+GW 1 31 0 0 -0.2313 0 0 0.2313 0.004
+GW 2 31 -0.2 0 -0.24 -0.2 0 0.24 0.004
+GE 0
+EK 0
+EX 0 1 16 0 1 0
+FR 0 1 0 0 300 0
+RP 0 181 73 1000 0 0 1 5
+EN

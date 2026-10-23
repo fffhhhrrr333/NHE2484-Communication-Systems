@@ -1,0 +1,68 @@
+{
+  "best": {
+    "r_ohm": 49.9994,
+    "x_ohm": 0.000206512,
+    "swr": 1.000012691054299,
+    "s11_db": -103.95070098462911,
+    "gain_dbi": 13.05,
+    "realized_gain_dbi": 13.04999999982513,
+    "fb_db": 10.22
+  },
+  "variables": {
+    "reflector_distance": 0.1028049,
+    "reflector_length": 0.5103174,
+    "director1_length": 0.4379216,
+    "director2_length": 0.4255981,
+    "director3_length": 0.4206466,
+    "director4_length": 0.4263909,
+    "gap1": 0.1826665,
+    "gap2": 0.2798626,
+    "gap3": 0.3537916,
+    "gap4": 0.3556554
+  },
+  "evaluations": 3485,
+  "method": "archive-seeded Sobol DE (expanded bounds) plus Nelder-Mead",
+  "bounds": [
+    [
+      0.1,
+      0.26
+    ],
+    [
+      0.43,
+      0.56
+    ],
+    [
+      0.38,
+      0.47
+    ],
+    [
+      0.36,
+      0.47
+    ],
+    [
+      0.36,
+      0.47
+    ],
+    [
+      0.36,
+      0.47
+    ],
+    [
+      0.12,
+      0.36
+    ],
+    [
+      0.17,
+      0.5
+    ],
+    [
+      0.17,
+      0.5
+    ],
+    [
+      0.17,
+      0.5
+    ]
+  ],
+  "reference_realized_gain_dbi": 12.969999999949199
+}

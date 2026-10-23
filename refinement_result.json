@@ -1,0 +1,26 @@
+{
+  "best": {
+    "r_ohm": 49.9997,
+    "x_ohm": 0.000164237,
+    "swr": 1.0000068403302307,
+    "s11_db": -109.31908824711553,
+    "gain_dbi": 12.97,
+    "realized_gain_dbi": 12.969999999949199,
+    "fb_db": 10.23
+  },
+  "variables": {
+    "reflector_distance": 0.1472870709393808,
+    "reflector_length": 0.4884920808468449,
+    "director1_length": 0.4399232049785177,
+    "director2_length": 0.42562639885317566,
+    "director3_length": 0.4206571650125579,
+    "director4_length": 0.4218939648827609,
+    "gap1": 0.18067735340059843,
+    "gap2": 0.27917546123951964,
+    "gap3": 0.34123767111665204,
+    "gap4": 0.3676574562371055
+  },
+  "evaluations": 1585,
+  "method": "bounded DE restart plus Nelder-Mead",
+  "base_file": "E:\\nec\\code\\optimization_result.json"
+}

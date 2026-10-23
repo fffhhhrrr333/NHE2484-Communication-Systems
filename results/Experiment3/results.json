@@ -1,0 +1,74 @@
+{
+  "swr_min": 1.000012691054299,
+  "swr_min_mhz": 300.0,
+  "band_contains_300_mhz": true,
+  "bw_low_mhz": 297.1535238883275,
+  "bw_high_mhz": 301.68334705814067,
+  "bw_mhz": 4.529823169813142,
+  "fractional_bw_percent": 1.5128738357922773,
+  "gain_peak_dbi": 13.04999999982513,
+  "gain_peak_mhz": 300.0,
+  "at_300": {
+    "z": [
+      49.9994,
+      0.000206512
+    ],
+    "swr": 1.000012691054299,
+    "s11": -103.95070098462911,
+    "gain": 13.05,
+    "realized_gain": 13.04999999982513,
+    "fb": 10.22
+  },
+  "bw_method": "2:1 SWR; crossing frequencies refined with NEC2 solver",
+  "distance_m": 0.1028049,
+  "reflector_length_m": 0.5103174,
+  "director_lengths_m": [
+    0.4379216,
+    0.4255981,
+    0.4206466,
+    0.4263909
+  ],
+  "director_gaps_m": [
+    0.1826665,
+    0.2798626,
+    0.3537916,
+    0.3556554
+  ],
+  "director_positions_m": [
+    0.1826665,
+    0.4625291,
+    0.8163207,
+    1.1719761
+  ],
+  "hpbw_elevation_deg": 39.45454545454544,
+  "initial_one_director_300": {
+    "f": 300.0,
+    "z": [
+      18.5673,
+      16.8251
+    ],
+    "swr": 3.04026064834711,
+    "s11": -5.934474607660546,
+    "gain": 9.14,
+    "realized_gain": 7.861520424742148,
+    "fb": 7.010000000000001
+  },
+  "initial_four_directors_300": {
+    "f": 300.0,
+    "z": [
+      20.9824,
+      8.65762
+    ],
+    "swr": 2.469024222218926,
+    "s11": -7.46356751013283,
+    "gain": 11.31,
+    "realized_gain": 10.451706773346558,
+    "fb": 14.84
+  },
+  "figure_source": "Current figures: 4NEC2 GUI screenshots for CAD, SWR, S11, patterns and F/B; NEC2 solver data replots for realized-gain and parameter sweeps. See E:/nec/Figure_sources.csv.",
+  "optimization": {
+    "method": "archive-seeded Sobol DE (expanded bounds) plus Nelder-Mead",
+    "evaluations": 3485,
+    "full_model": "14 wires; 9 reflector rods; 4 directors; 31 segments per wire"
+  }
+}
